@@ -4,24 +4,27 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
-|--------------------------------------------------------------------------
+|----------------------------------------------------------------------
 | Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
+|----------------------------------------------------------------------
 */
 
+// Welcome route
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
+// Dashboard route for users with 'tester' or 'super-admin' roles
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return view('/dashboard/dashboard');
+})->middleware(['auth', 'verified', 'role:tester|super-admin'])->name('dashboard');
 
+// Admin Dashboard route for super-admin only
+Route::get('/dashboard/admin', function () {
+    return view('/dashboard/admin-dashboard');
+})->middleware(['auth', 'verified', 'role:super-admin'])->name('admin_dashboard');
+
+// Profile routes
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
