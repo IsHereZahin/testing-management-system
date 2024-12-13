@@ -8,11 +8,6 @@ class Project extends Model
 {
     protected $fillable = ['name', 'description'];
 
-    public function users()
-    {
-        return $this->belongsToMany(User::class);
-    }
-
     public function sections()
     {
         return $this->hasMany(Section::class);
@@ -21,5 +16,10 @@ class Project extends Model
     public function testCases()
     {
         return $this->hasManyThrough(TestCase::class, Section::class);
+    }
+
+    public function testers()
+    {
+        return $this->belongsToMany(User::class, 'project_user', 'project_id', 'user_id');
     }
 }

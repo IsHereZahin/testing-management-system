@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('page_id')->constrained()->onDelete('cascade');
+            $table->foreignId('page_id');
             $table->string('name');
             $table->timestamps();
         });
