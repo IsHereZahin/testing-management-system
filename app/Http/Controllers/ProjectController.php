@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\User;
@@ -84,11 +85,21 @@ class ProjectController extends Controller
 
     public function delete($id)
     {
-        // Delete the project from the database
         $project = Project::findOrFail($id);
-        $project->testers()->detach(); // Detach all testers associated with this project
-        $project->delete();
 
-        return redirect()->route('projects')->with('success', 'Project deleted successfully.');
+        if (auth()->user()->role !== 'super-admin') {
+            return redirect()->route('projects')->with('error', 'You are not authorized to delete this project.');
+        }
+
+        DB::transaction(function () use ($project) {
+            foreach ($project->pages as $page) {
+                $page->testCases()->delete();
+            }
+            $project->pages()->delete();
+            $project->testers()->detach();
+            $project->delete();
+        });
+
+        return redirect()->route('projects')->with('success', 'Project and its related pages, test cases, and users deleted successfully.');
     }
 }

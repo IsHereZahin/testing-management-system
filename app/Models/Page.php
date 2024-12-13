@@ -19,4 +19,9 @@ class Page extends Model
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
+
+    public function testCases()
+    {
+        return $this->hasMany(TestCase::class);
+    }
 }
