@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::define('edit-page', function ($user) {
+            return $user->role === 'super-admin';
+        });
+
+        Gate::define('delete-page', function ($user) {
+            return $user->role === 'super-admin';
+        });
     }
 }

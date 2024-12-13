@@ -8,14 +8,9 @@ class Project extends Model
 {
     protected $fillable = ['name', 'description'];
 
-    public function sections()
+    public function pages()
     {
-        return $this->hasMany(Section::class);
-    }
-
-    public function testCases()
-    {
-        return $this->hasManyThrough(TestCase::class, Section::class);
+        return $this->hasMany(Page::class);
     }
 
     public function testers()

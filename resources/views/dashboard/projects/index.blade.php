@@ -25,10 +25,14 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <p class="text-sm mb-0 text-capitalize">Project</p>
-                            <h4 class="mb-0">{{ $project->name }}</h4>
+                            <h4 class="mb-0">
+                                <a href="{{ url('/project/' . $project->id . '/pages') }}">{{ $project->name }}</a>
+                            </h4>
                         </div>
                         <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark text-center border-radius-lg">
-                            <i class="material-symbols-rounded opacity-10">folder</i>
+                            <a href="{{ url('/project/' . $project->id . '/pages') }}">
+                                <i class="material-symbols-rounded opacity-10">folder</i>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id');
+            $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->string('name');
+            $table->foreignId('creator_id')->constrained('users');
             $table->timestamps();
         });
     }

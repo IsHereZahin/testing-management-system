@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\PageController;
 
 /*
 |----------------------------------------------------------------------
@@ -29,7 +30,7 @@ Route::get('/dashboard/admin', function () {
 // Route for viewing projects, accessible to testers and super-admins
 Route::middleware(['auth', 'verified', 'role:tester|super-admin'])->group(function () {
     Route::controller(ProjectController::class)->group(function () {
-        Route::get('/projects', 'projects')->name('projects');  // View projects
+        Route::get('/projects', 'projects')->name('projects');
     });
 });
 
@@ -42,6 +43,24 @@ Route::middleware(['auth', 'verified', 'role:super-admin'])->group(function () {
         Route::delete('/project/delete/{id}', 'delete')->name('project.delete');
     });
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::controller(PageController::class)->group(function () {
+        Route::get('/project/{project}/pages', 'index')->name('page.index');
+        Route::get('/project/{project}/page/create', 'create')->name('page.create');
+        Route::post('/project/{project}/page/store', 'store')->name('page.store');
+        Route::get('/project/{project}/page/{page}', 'show')->name('page.show');
+    });
+});
+
+Route::middleware(['auth', 'verified', 'role:super-admin'])->group(function () {
+    Route::controller(PageController::class)->group(function () {
+        Route::get('/project/{project}/page/{page}/edit', 'edit')->name('page.edit');
+        Route::put('/project/{project}/page/{page}/update', 'update')->name('page.update');
+        Route::delete('/project/{project}/page/{page}/delete', 'destroy')->name('page.destroy');
+    });
+});
+
 
 
 // Profile routes
