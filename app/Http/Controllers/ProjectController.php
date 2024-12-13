@@ -83,13 +83,22 @@ class ProjectController extends Controller
         return redirect()->route('projects')->with('success', 'Project updated successfully!');
     }
 
-    public function delete($id)
+    public function delete(Request $request, $id)
     {
         $project = Project::findOrFail($id);
 
         if (auth()->user()->role !== 'super-admin') {
             return redirect()->route('projects')->with('error', 'You are not authorized to delete this project.');
         }
+
+        // Validate confirmation
+        $request->validate([
+            'project_name_confirmation' => ['required', 'string', function ($attribute, $value, $fail) use ($project) {
+                if ($value !== $project->name) {
+                    $fail('The confirmation text does not match the project name.');
+                }
+            }],
+        ]);
 
         DB::transaction(function () use ($project) {
             foreach ($project->pages as $page) {
@@ -100,6 +109,6 @@ class ProjectController extends Controller
             $project->delete();
         });
 
-        return redirect()->route('projects')->with('success', 'Project and its related pages, test cases, and users deleted successfully.');
+        return redirect()->route('projects')->with('success', 'Project and its related data have been deleted successfully.');
     }
 }

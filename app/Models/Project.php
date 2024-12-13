@@ -18,7 +18,6 @@ class Project extends Model
         return $this->hasMany(Page::class);
     }
 
-
     public function testCases()
     {
         return $this->hasManyThrough(TestCase::class, Page::class, 'project_id', 'page_id', 'id', 'id');

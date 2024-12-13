@@ -34,7 +34,11 @@
                                 @endforeach
                             </select>
                             <div class="text-center my-2">or</div>
-                            <input type="text" id="new_section" name="new_section" class="form-control border p-3" placeholder="Create a New Section" value="{{ old('new_section') }}" disabled>
+                            <input type="text" id="new_section" name="new_section" class="form-control border p-3" placeholder="Create a New Section" value="{{ old('new_section') }}"
+                                @if($project->testCases->count() > 0)
+                                    disabled
+                                @endif
+                            >
                         </div>
 
                         <script>
@@ -42,15 +46,21 @@
                                 var sectionDropdown = document.getElementById('section');
                                 var newSectionInput = document.getElementById('new_section');
 
-                                // If a section is selected, disable the new section input field
+                                // Enable/Disable the new section input field based on the dropdown selection
                                 if (sectionDropdown.value !== "") {
                                     newSectionInput.disabled = true;
-                                    newSectionInput.value = "";  // Clear the new section input if select any section
+                                    newSectionInput.value = "";
                                 } else {
                                     newSectionInput.disabled = false;
                                 }
                             });
+
+                            // Ensure the new section field is enabled if no test cases exist
+                            @if($project->testCases->count() === 0)
+                                document.getElementById('new_section').disabled = false;
+                            @endif
                         </script>
+
 
                         <!-- Test Case ID -->
                         <div class="form-group mb-3">

@@ -24,12 +24,12 @@
                 <div class="card-header p-2 ps-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-sm mb-0 text-capitalize">Project</p>
-                            <h4 class="mb-0">
+                            <p class="text-sm cursor-pointer mb-0 text-capitalize">Project</p>
+                            <h4 class="mb-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Description: {{ $project->description }}">
                                 <a href="{{ url('/project/' . $project->id . '/pages') }}">{{ $project->name }}</a>
                             </h4>
                         </div>
-                        <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark text-center border-radius-lg">
+                        <div class="icon icon-md icon-shape cursor-pointer bg-gradient-dark shadow-dark text-center border-radius-lg" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Description: {{ $project->description }}">
                             <a href="{{ url('/project/' . $project->id . '/pages') }}">
                                 <i class="material-symbols-rounded opacity-10">folder</i>
                             </a>
@@ -38,7 +38,9 @@
                 </div>
                 <hr class="dark horizontal my-0">
                 <div class="card-footer p-2 ps-3 d-flex justify-content-between">
-                    <p class="text-sm">{{ $project->description }}</p>
+                    {{-- <p class="text-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ $project->description }}">
+                        {{ Str::words($project->description, 4) }}
+                    </p> --}}
 
                     <!-- Display related testers -->
                     <div class="avatar-group mt-2">
@@ -58,14 +60,50 @@
                             <i class="material-symbols-rounded fs-4">edit</i> <!-- Font size increased -->
                         </a>
 
-                        <!-- Delete Icon -->
-                        <form action="{{ route('project.delete', $project->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger d-flex align-items-center justify-content-center p-2" title="Delete Project" onclick="return confirm('Are you sure you want to delete this project?');">
-                                <i class="material-symbols-rounded fs-4">delete</i> <!-- Font size increased -->
-                            </button>
-                        </form>
+                        <!-- Delete Project Button -->
+                        <button type="button" class="btn btn-danger d-flex align-items-center justify-content-center p-2"
+                                data-bs-toggle="modal" data-bs-target="#deleteProjectModal-{{ $project->id }}">
+                            <i class="material-symbols-rounded fs-4">delete</i>
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="deleteProjectModal-{{ $project->id }}" tabindex="-1" aria-labelledby="deleteProjectModalLabel-{{ $project->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteProjectModalLabel-{{ $project->id }}">Delete Project</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            This project contains <strong>{{ $project->pages->count() }}</strong> pages and
+                                            <strong>{{ $project->pages->sum(fn($page) => $page->testCases->count()) }}</strong> test cases.
+                                            Deleting it will remove all associated data.
+                                        </p>
+                                        <p class="text-danger">
+                                            This action cannot be undone.
+                                        </p>
+                                        <form action="{{ route('project.delete', $project->id) }}" method="POST" id="deleteProjectForm">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <div class="mb-3">
+                                                <label for="projectNameConfirmation-{{ $project->id }}" class="form-label">
+                                                    To confirm, type "<strong>{{ $project->name }}</strong>" in the box below:
+                                                </label>
+                                                <input type="text" name="project_name_confirmation" id="projectNameConfirmation-{{ $project->id }}"
+                                                    class="form-control border p-2" placeholder="{{ $project->name }}" required>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-danger w-100">
+                                                Confirm Deletion
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     @endif
                 </div>
