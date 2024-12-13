@@ -6,10 +6,32 @@ use Illuminate\Database\Eloquent\Model;
 
 class TestCase extends Model
 {
-    protected $fillable = ['category_id', 'test_case_id', 'description', 'steps', 'expected_result', 'step_status', 'test_status', 'comments'];
+    protected $fillable = [
+        'page_id',
+        'section',
+        'test_case_id',
+        'description',
+        'steps',
+        'expected_result',
+        'step_status',
+        'test_status',
+        'comments',
+        'tested_by',
+        'last_tested'
+    ];
 
-    public function category()
+    public function project()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Project::class);
+    }
+
+    public function page()
+    {
+        return $this->belongsTo(Page::class);
+    }
+
+    public function tested_by()
+    {
+        return $this->belongsTo(User::class);
     }
 }

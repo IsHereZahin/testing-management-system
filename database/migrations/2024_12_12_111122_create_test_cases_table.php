@@ -8,26 +8,31 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * Creates the 'test_cases' table to store test case details.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('test_cases', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('section_id');
-            $table->string('test_case_id');
+            $table->unsignedBigInteger('page_id');
+            $table->string('section');
+            $table->string('test_case_id')->unique();
             $table->text('description');
             $table->text('steps');
             $table->text('expected_result');
             $table->string('step_status')->default('Not tested');
-            $table->string('test_status')->default('Not tested');
+            $table->enum('test_status', ['pending', 'pass', 'fail'])->default('pending');
             $table->text('comments')->nullable();
-            $table->timestamp('last_tested')->nullable();
+            $table->foreignId('tested_by')->constrained('users');
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * Drops the 'test_cases' table.
      */
     public function down(): void
     {

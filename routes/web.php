@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\TestCaseController;
 
 /*
 |----------------------------------------------------------------------
@@ -51,6 +52,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/project/{project}/page/store', 'store')->name('page.store');
         Route::get('/project/{project}/page/{page}', 'show')->name('page.show');
     });
+
+    Route::controller(TestCaseController::class)->group(function () {
+        Route::get('/project/{project}/{page}/tests', 'index')->name('test.index');
+        Route::get('/project/{project}/{page}/test/create', 'create')->name('test.create');
+        Route::post('/project/{project}/{page}/test/store', 'store')->name('test.store');
+        Route::get('project/{project}/{page}/test/{testCase}', 'show')->name('test.show');
+        Route::get('project/{project}/{page}/test/{testCase}/edit', 'edit')->name('test.edit');
+        Route::put('project/{project}/{page}/test/{testCase}/update', 'update')->name('test.update');
+        Route::delete('/project/{project}/{page}/test/{testCase}/delete', 'delete')->name('test.delete');
+    });
+
 });
 
 Route::middleware(['auth', 'verified', 'role:super-admin'])->group(function () {

@@ -57,10 +57,15 @@
                                             <span class="badge badge-sm bg-gradient-success">Active</span> <!-- Use dynamic status if available -->
                                         </td>
                                         <td class="align-middle text-center">
+                                            <a href="{{ route('test.index', ['project' => $project->id, 'page' => $page->id]) }}" class="btn btn-info btn-sm p-2 text-white" data-toggle="tooltip" data-original-title="Show Test Cases">
+                                                <i class="fas fa-eye"></i> Tests
+                                            </a>
+                                        </td>
+                                        {{-- <td class="align-middle text-center">
                                             <a href="{{ route('page.show', ['project' => $project->id, 'page' => $page->id]) }}" class="btn btn-info btn-sm p-2 text-white" data-toggle="tooltip" data-original-title="Show Page">
                                                 <i class="fas fa-eye"></i> Show
                                             </a>
-                                        </td>
+                                        </td> --}}
                                         <td class="align-middle item-center">
                                             @can('edit-page')
                                                 <a href="{{ url('/project/' . $project->id . '/page/' . $page->id . '/edit') }}" class="btn btn-warning btn-sm p-2 text-white" data-toggle="tooltip" data-original-title="Edit Page">
