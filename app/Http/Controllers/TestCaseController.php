@@ -151,11 +151,19 @@ class TestCaseController extends Controller
     /**
      * Remove the specified test case from storage.
      */
-    public function delete(Project $project, Page $page, TestCase $testCase)
+    public function delete(Request $request, Project $project, Page $page, TestCase $testCase)
     {
         if (!$this->authorizeProjectAccess($project)) {
             return redirect()->route('projects')->with('error', 'You are not authorized to delete this test case.');
         }
+
+        $request->validate([
+            'test_case_confirmation' => ['required', 'string', function ($attribute, $value, $fail) use ($testCase) {
+                if ($value !== $testCase->test_title) {
+                    $fail('The confirmation text does not match the test case title.');
+                }
+            }],
+        ]);
 
         $testCase->delete();
 

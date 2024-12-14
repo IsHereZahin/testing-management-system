@@ -62,7 +62,7 @@
 
                         <!-- Delete Project Button -->
                         <button type="button" class="btn btn-danger d-flex align-items-center justify-content-center p-2"
-                                data-bs-toggle="modal" data-bs-target="#deleteProjectModal-{{ $project->id }}">
+                                title="Delete Project" data-bs-toggle="modal" data-bs-target="#deleteProjectModal-{{ $project->id }}">
                             <i class="material-symbols-rounded fs-4">delete</i>
                         </button>
 
@@ -72,7 +72,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="deleteProjectModalLabel-{{ $project->id }}">Delete Project</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close text-muted" data-bs-dismiss="modal" aria-label="Close">X</button>
                                     </div>
                                     <div class="modal-body">
                                         <p>

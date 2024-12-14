@@ -28,7 +28,7 @@
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Test Case ID</th>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Title</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Test Status</th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actions</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -56,23 +56,53 @@
                                             </span>
                                         </td>
                                         <td class="align-middle text-center">
-                                            <a href="{{ route('test.show', ['project' => $project->id, 'page' => $page->id, 'testCase' => $testCase->id]) }}" class="btn btn-info btn-sm p-2 text-white" data-toggle="tooltip" data-original-title="View Test Case">
-                                                <i class="fas fa-eye"></i> View
-                                            </a>
+                                            <div class=" d-flex gap-2">
+                                                <a href="{{ route('test.show', ['project' => $project->id, 'page' => $page->id, 'testCase' => $testCase->id]) }}" class="btn btn-info btn-sm p-2 text-white" data-toggle="tooltip" data-original-title="View Test Case">
+                                                    <i class="material-symbols-rounded fs-4">info</i>
+                                                </a>
 
-                                            <a href="{{ route('test.edit', ['project' => $project->id, 'page' => $page->id, 'testCase' => $testCase->id]) }}" class="btn btn-warning btn-sm p-2 text-white" data-toggle="tooltip" data-original-title="Edit Test Case">
-                                                <i class="fas fa-edit"></i> Edit
-                                            </a>
+                                                <a href="{{ route('test.edit', ['project' => $project->id, 'page' => $page->id, 'testCase' => $testCase->id]) }}" class="btn btn-warning d-flex align-items-center justify-content-center p-2" title="Edit Test Case">
+                                                    <i class="material-symbols-rounded fs-4">edit</i> <!-- Font size increased -->
+                                                </a>
 
-                                            <form action="{{ url('/project/' . $project->id . '/' . $page->id . '/test/' . $testCase->id . '/delete') }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm p-2" data-toggle="tooltip" data-original-title="Delete Test Case" onclick="return confirm('Are you sure you want to delete this test case?')">
-                                                    <i class="fas fa-trash-alt"></i> Delete
+                                                <button type="button" class="btn btn-danger d-flex align-items-center justify-content-center p-2"
+                                                        data-bs-toggle="modal" title="Delete Test Case" data-bs-target="#deleteTestCaseModal-{{ $testCase->id }}">
+                                                    <i class="material-symbols-rounded fs-4">delete</i>
                                                 </button>
-                                            </form>
 
+                                                <div class="modal fade" id="deleteTestCaseModal-{{ $testCase->id }}" tabindex="-1" aria-labelledby="deleteTestCaseModalLabel-{{ $testCase->id }}" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="deleteTestCaseModalLabel-{{ $testCase->id }}">Delete Test Case</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>
+                                                                    Are you sure you want to delete the test case <strong>"{{ $testCase->test_title }}"</strong>?
+                                                                </p>
+                                                                <p class="text-danger">This action cannot be undone.</p>
+                                                                <form action="{{ route('test.delete', ['project' => $project->id, 'page' => $page->id, 'testCase' => $testCase->id]) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('DELETE')
+
+                                                                    <div class="mb-3">
+                                                                        <label for="testCaseConfirmation-{{ $testCase->id }}" class="form-label">
+                                                                            To confirm, type "<strong>{{ $testCase->test_title }}</strong>" below:
+                                                                        </label>
+                                                                        <input type="text" name="test_case_confirmation" id="testCaseConfirmation-{{ $testCase->id }}"
+                                                                            class="form-control border p-2" placeholder="{{ $testCase->test_title }}" required>
+                                                                    </div>
+
+                                                                    <button type="submit" class="btn btn-danger w-100">Confirm Deletion</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
+
                                     </tr>
                                     @endforeach
                                 </tbody>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PageController extends Controller
 {
@@ -96,11 +97,24 @@ class PageController extends Controller
     /**
      * Remove the specified page from storage.
      */
-    public function destroy(Project $project, Page $page)
+    public function destroy(Request $request, Project $project, Page $page)
     {
         $this->authorize('delete-page', $page);
 
-        $page->delete();
+        $request->validate([
+            'page_name_confirmation' => ['required', 'string', function ($attribute, $value, $fail) use ($page) {
+                if ($value !== $page->name) {
+                    $fail('The confirmation text does not match the page name.');
+                }
+            }],
+        ]);
+
+        $deletedTestCasesCount = $page->testCases->count();
+
+        DB::transaction(function () use ($page) {
+            $page->testCases()->delete();
+            $page->delete();
+        });
 
         return redirect()->route('page.index', $project)->with('success', 'Page deleted successfully!');
     }
