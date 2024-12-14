@@ -65,53 +65,22 @@
 
                         <div class="form-group mb-3">
                             <label for="test_case_id" class="form-label">Test Case ID</label>
-                            <input
-                                type="text"
-                                id="test_case_id"
-                                name="test_case_id"
-                                class="form-control border p-3"
-                                placeholder="Enter test case ID"
-                                value="{{ old('test_case_id', $testCase->test_case_id) }}"
-                                required>
+                            <input type="text" id="test_case_id" name="test_case_id" class="form-control border p-3" placeholder="Enter test case ID" value="{{ old('test_case_id', $testCase->test_case_id) }}" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="test_title" class="form-label">Test Title</label>
+                            <input type="text" id="test_title" name="test_title" class="form-control border p-3" placeholder="Enter test case ID" value="{{ old('test_title', $testCase->test_case_id) }}" required>
                         </div>
 
                         <div class="form-group mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                class="form-control border p-3"
-                                placeholder="Enter test case description"
-                                required>{{ old('description', $testCase->description) }}</textarea>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="steps" class="form-label">Steps</label>
-                            <textarea
-                                id="steps"
-                                name="steps"
-                                class="form-control border p-3"
-                                placeholder="Enter test steps"
-                                required>{{ old('steps', $testCase->steps) }}</textarea>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="expected_result" class="form-label">Expected Result</label>
-                            <textarea
-                                id="expected_result"
-                                name="expected_result"
-                                class="form-control border p-3"
-                                placeholder="Enter expected result"
-                                required>{{ old('expected_result', $testCase->expected_result) }}</textarea>
+                            <textarea id="description" name="description" class="ckeditor form-control border p-3" placeholder="Enter test case description" required>{{ old('description', $testCase->description) }}</textarea>
                         </div>
 
                         <div class="form-group mb-3">
                             <label for="comments" class="form-label">Comments</label>
-                            <textarea
-                                id="comments"
-                                name="comments"
-                                class="form-control border p-3"
-                                placeholder="Optional comments">{{ old('comments', $testCase->comments) }}</textarea>
+                            <textarea id="comments" name="comments" class="ckeditor form-control border p-3" placeholder="Optional comments">{{ old('comments', $testCase->comments) }}</textarea>
                         </div>
 
                         <div class="d-flex justify-content-between">

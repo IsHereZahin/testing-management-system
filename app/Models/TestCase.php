@@ -10,14 +10,11 @@ class TestCase extends Model
         'page_id',
         'section',
         'test_case_id',
+        'test_title',
         'description',
-        'steps',
-        'expected_result',
-        'step_status',
         'test_status',
         'comments',
         'tested_by',
-        'last_tested'
     ];
 
     public function project()

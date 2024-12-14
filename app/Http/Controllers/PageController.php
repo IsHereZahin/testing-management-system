@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Page;
 use App\Models\Project;
-use App\Models\TestCase;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -47,22 +46,24 @@ class PageController extends Controller
      */
     public function store(Request $request, Project $project)
     {
+        // Check if the user is authorized to access the project
         if (!$this->authorizeProjectAccess($project)) {
             return redirect()->route('projects')->with('error', 'You are not authorized to store a page for this project.');
         }
 
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
+            'requirement' => 'required|string',
         ]);
 
         $project->pages()->create([
-            'name' => $request->name,
+            'name' => $validatedData['name'],
+            'requirement' => $validatedData['requirement'],
             'creator_id' => auth()->id(),
         ]);
 
         return redirect()->route('page.index', $project)->with('success', 'Page created successfully!');
     }
-
     /**
      * Show the form for editing the specified page.
      */
@@ -80,10 +81,12 @@ class PageController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'requirement' => 'required',
         ]);
 
         $page->update([
             'name' => $request->name,
+            'requirement' => $request->requirement,
             'creator_id' => auth()->id(),
         ]);
 

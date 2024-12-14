@@ -25,11 +25,9 @@
                                 <thead>
                                     <tr>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Activity</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">ID</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Description</th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Comments</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Test Case ID</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Title</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Test Status</th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Step Status</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actions</th>
                                     </tr>
                                 </thead>
@@ -46,19 +44,15 @@
                                             <p class="text-xs font-weight-bold mb-0">{{ $testCase->test_case_id }}</p>
                                         </td>
                                         <td>
-                                            <p class="text-xs font-weight-bold mb-0">{{ Str::limit($testCase->description, 50) }}</p>
+                                            <p class="text-xs font-weight-bold mb-0">{{ $testCase->test_title}}</p>
                                         </td>
                                         <td class="align-middle text-center">
-                                            <p class="text-xs font-weight-bold mb-0">{{ Str::limit($testCase->comments, 50) }}</p>
-                                        </td>
-                                        <td class="align-middle text-center">
-                                            <span class="badge badge-sm @if($testCase->test_status == 'pass') bg-gradient-success @elseif($testCase->test_status == 'fail') bg-gradient-danger @else bg-gradient-warning @endif">
-                                                {{ ucfirst($testCase->test_status) }}
-                                            </span>
-                                        </td>
-                                        <td class="align-middle text-center">
-                                            <span class="badge badge-sm @if($testCase->step_status == 'pass') bg-gradient-success @elseif($testCase->step_status == 'fail') bg-gradient-danger @else bg-gradient-warning @endif">
-                                                {{ ucfirst($testCase->step_status) }}
+                                            <span class="badge badge-sm
+                                            @if($testCase->test_status == 'pass') bg-gradient-success
+                                            @elseif($testCase->test_status == 'fail') bg-gradient-danger
+                                            @else bg-gradient-warning
+                                            @endif">
+                                                {{ $testCase->test_status }}
                                             </span>
                                         </td>
                                         <td class="align-middle text-center">

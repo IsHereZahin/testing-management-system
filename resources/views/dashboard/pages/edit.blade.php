@@ -25,6 +25,10 @@
                             <label for="name" class="form-label">Page Name</label>
                             <input type="text" id="name" name="name" class="form-control border p-3" placeholder="Enter page name" value="{{ old('name', $page->name) }}" required>
                         </div>
+                        <div class="form-group mb-3">
+                            <label for="description" class="form-label">Requirement</label>
+                            <textarea id="requirement" name="requirement" class="ckeditor border p-3" placeholder="Enter test case requirement" required>{{ old('requirement', $page->requirement) }}</textarea>
+                        </div>
 
                         <div class="d-flex justify-content-between">
                             <a href="{{ route('page.index', $project->id) }}" class="btn btn-secondary">Back</a>

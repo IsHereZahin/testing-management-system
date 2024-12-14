@@ -56,10 +56,8 @@ class TestCaseController extends Controller
 
         $validated = $request->validate([
             'test_case_id' => 'required|string|max:255',
-            'description' => 'required|string',
-            'steps' => 'required|string',
-            'expected_result' => 'required|string',
-            'step_status' => 'nullable|string',
+            'test_title' => 'required|string|max:255',
+            'description' => 'required',
             'test_status' => 'nullable|in:pending,pass,fail',
             'comments' => 'nullable|string',
         ]);
@@ -76,12 +74,10 @@ class TestCaseController extends Controller
         TestCase::create([
             'section' => $section,
             'test_case_id' => $validated['test_case_id'],
+            'test_title' => $validated['test_title'],
             'description' => $validated['description'],
-            'steps' => $validated['steps'],
-            'expected_result' => $validated['expected_result'],
-            'step_status' => $validated['step_status'] ?? 'Not tested',
             'test_status' => $validated['test_status'] ?? 'pending',
-            'comments' => $validated['comments'],
+            'comments' => $validated['comments'] ?? null,
             'tested_by' => auth()->id(),
             'page_id' => $page->id,
         ]);
@@ -123,16 +119,12 @@ class TestCaseController extends Controller
             return redirect()->route('projects')->with('error', 'You are not authorized to update this test case.');
         }
 
-        // Validate the form data
         $validated = $request->validate([
-            // 'section' validation is now handled conditionally based on 'new_section'
-            'section' => 'nullable|string|max:255', // Allow section to be empty if new_section is filled
-            'new_section' => 'nullable|string|max:255', // Allow new_section to be filled if no section is selected
+            'section' => 'nullable|string|max:255',
+            'new_section' => 'nullable|string|max:255',
             'test_case_id' => 'required|string|max:255',
-            'description' => 'required|string',
-            'steps' => 'required|string',
-            'expected_result' => 'required|string',
-            'step_status' => 'nullable|string',
+            'test_title' => 'required',
+            'description' => 'required',
             'test_status' => 'nullable|in:pending,pass,fail',
             'comments' => 'nullable|string',
         ]);
@@ -145,10 +137,8 @@ class TestCaseController extends Controller
         $testCase->update([
             'section' => $section,
             'test_case_id' => $validated['test_case_id'],
+            'test_title' => $validated['test_title'],
             'description' => $validated['description'],
-            'steps' => $validated['steps'],
-            'expected_result' => $validated['expected_result'],
-            'step_status' => $validated['step_status'] ?? $testCase->step_status,
             'test_status' => $validated['test_status'] ?? $testCase->test_status,
             'comments' => $validated['comments'],
             'tested_by' => auth()->id(),

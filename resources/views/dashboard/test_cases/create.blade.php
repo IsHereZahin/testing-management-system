@@ -61,67 +61,29 @@
                             @endif
                         </script>
 
-
                         <!-- Test Case ID -->
                         <div class="form-group mb-3">
                             <label for="test_case_id" class="form-label">Test Case ID</label>
-                            <input
-                                type="text"
-                                id="test_case_id"
-                                name="test_case_id"
-                                class="form-control border p-3"
-                                placeholder="Enter test case ID"
-                                value="{{ old('test_case_id') }}"
-                                required
-                            >
+                            <input type="text" id="test_case_id" name="test_case_id" class="form-control border p-3" placeholder="Enter test case ID" value="{{ old('test_case_id') }}" required>
+                        </div>
+
+                        <!-- test_title -->
+                        <div class="form-group mb-3">
+                            <label for="test_title" class="form-label">Test test_title</label>
+                            <input type="text" id="test_title" name="test_title" class="form-control border p-3" placeholder="Enter test title" value="{{ old('test_title') }}" required>
                         </div>
 
                         <!-- Description -->
                         <div class="form-group mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                class="form-control border p-3"
-                                placeholder="Enter test case description"
-                                required
-                            >{{ old('description') }}</textarea>
+                            <textarea id="description" name="description" class="ckeditor border p-3" placeholder="Enter test case description" required>{{ old('description') }}</textarea>
                         </div>
 
-                        <!-- Steps -->
-                        <div class="form-group mb-3">
-                            <label for="steps" class="form-label">Steps</label>
-                            <textarea
-                                id="steps"
-                                name="steps"
-                                class="form-control border p-3"
-                                placeholder="Enter test steps"
-                                required
-                            >{{ old('steps') }}</textarea>
-                        </div>
-
-                        <!-- Expected Result -->
-                        <div class="form-group mb-3">
-                            <label for="expected_result" class="form-label">Expected Result</label>
-                            <textarea
-                                id="expected_result"
-                                name="expected_result"
-                                class="form-control border p-3"
-                                placeholder="Enter expected result"
-                                required
-                            >{{ old('expected_result') }}</textarea>
-                        </div>
-
-                        <!-- Comments -->
+                        {{-- <!-- Comments -->
                         <div class="form-group mb-3">
                             <label for="comments" class="form-label">Comments</label>
-                            <textarea
-                                id="comments"
-                                name="comments"
-                                class="form-control border p-3"
-                                placeholder="Optional comments"
-                            >{{ old('comments') }}</textarea>
-                        </div>
+                            <textarea id="comments" name="comments" class="ckeditor form-control border p-3" placeholder="Optional comments">{{ old('comments') }}</textarea>
+                        </div> --}}
 
                         <!-- Form Buttons -->
                         <div class="d-flex justify-content-between">

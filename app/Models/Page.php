@@ -9,7 +9,7 @@ class Page extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['project_id', 'name', 'creator_id'];
+    protected $fillable = ['project_id', 'name', 'requirement', 'creator_id'];
 
     public function project()
     {
