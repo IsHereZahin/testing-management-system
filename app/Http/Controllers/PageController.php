@@ -26,7 +26,16 @@ class PageController extends Controller
             return redirect()->route('projects')->with('warning', 'You are not authorized to view pages for this project.');
         }
 
-        $pages = $project->pages;
+        $pages = $project->pages->map(function ($page) {
+            $testCases = $page->testCases;
+            $page->pending_count = $testCases->where('test_status', 0)->count();
+            $page->pass_count = $testCases->where('test_status', 1)->count();
+            $page->fail_count = $testCases->where('test_status', 2)->count();
+            $page->total_tests = $testCases->count();
+
+            return $page;
+        });
+
         return view('dashboard.pages.index', compact('project', 'pages'));
     }
 
