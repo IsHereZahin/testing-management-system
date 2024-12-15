@@ -23,7 +23,7 @@ class TestCaseController extends Controller
     public function index(Project $project, Page $page)
     {
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to view test cases for this project.');
+            return redirect()->route('projects')->with('error', 'Access denied: Unauthorized to view test cases.');
         }
 
         $testCases = TestCase::where('page_id', $page->id)->get();
@@ -35,9 +35,8 @@ class TestCaseController extends Controller
      */
     public function create(Project $project, Page $page)
     {
-        // Check authorization for the project
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to create a test case for this project.');
+            return redirect()->route('projects')->with('error', 'Access denied: Unauthorized to create test cases.');
         }
 
         $sections = TestCase::where('page_id', $page->id)->distinct()->pluck('section');
@@ -51,7 +50,7 @@ class TestCaseController extends Controller
     public function store(Request $request, Project $project, Page $page)
     {
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to store a test case for this project.');
+            return redirect()->route('projects')->with('error', 'Access denied: Unauthorized to save test cases.');
         }
 
         $validated = $request->validate([
@@ -62,13 +61,9 @@ class TestCaseController extends Controller
             'comments' => 'nullable|string',
         ]);
 
-        // Handle section input
-        $section = $request->section;
-        if (!$section && $request->new_section) {
-            $section = $request->new_section;
-        }
+        $section = $request->section ?: $request->new_section;
         if (!$section) {
-            return redirect()->back()->withErrors(['section' => 'Please select or create a new section.']);
+            return redirect()->back()->withErrors(['section' => 'Please select or create a section.']);
         }
 
         TestCase::create([
@@ -76,14 +71,13 @@ class TestCaseController extends Controller
             'test_case_id' => $validated['test_case_id'],
             'test_title' => $validated['test_title'],
             'description' => $validated['description'],
-            // 'test_status' => $validated['test_status'],
             'comments' => $validated['comments'] ?? null,
             'tested_by' => auth()->id(),
             'page_id' => $page->id,
         ]);
 
         return redirect()->route('test.index', ['project' => $project->id, 'page' => $page->id])
-                        ->with('success', 'Test case created successfully.');
+                        ->with('success', 'Test case added successfully.');
     }
 
     /**
@@ -92,7 +86,7 @@ class TestCaseController extends Controller
     public function show(Project $project, Page $page, TestCase $test)
     {
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to view this test case.');
+            return redirect()->route('projects')->with('error', 'Access denied: Unauthorized to view this test case.');
         }
 
         return view('dashboard.test_cases.show', compact('test', 'project', 'page'));
@@ -104,10 +98,11 @@ class TestCaseController extends Controller
     public function edit(Project $project, Page $page, TestCase $testCase)
     {
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to view this test case.');
+            return redirect()->route('projects')->with('error', 'Access denied: Unauthorized to edit test cases.');
         }
+
         $sections = TestCase::where('page_id', $page->id)->distinct()->pluck('section');
-        return view('dashboard.test_cases.edit', compact('project', 'page', 'testCase','sections'));
+        return view('dashboard.test_cases.edit', compact('project', 'page', 'testCase', 'sections'));
     }
 
     /**
@@ -116,7 +111,7 @@ class TestCaseController extends Controller
     public function update(Request $request, Project $project, Page $page, TestCase $testCase)
     {
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to update this test case.');
+            return redirect()->route('projects')->with('error', 'Access denied: Unauthorized to update this test case.');
         }
 
         $validated = $request->validate([
@@ -129,9 +124,9 @@ class TestCaseController extends Controller
             'comments' => 'nullable|string',
         ]);
 
-        $section = $validated['section'] ?? $validated['new_section'];  // If section is not selected, use new_section
+        $section = $validated['section'] ?? $validated['new_section'];
         if (!$section && !$testCase->section) {
-            return redirect()->back()->with('error', 'Section is required. Please select or create a section.');
+            return redirect()->back()->with('error', 'Section is required. Select or create a section.');
         }
 
         $testCase->update([
@@ -145,7 +140,7 @@ class TestCaseController extends Controller
         ]);
 
         return redirect()->route('test.index', ['project' => $project->id, 'page' => $page->id])
-                        ->with('success', 'Test case updated successfully.');
+                        ->with('info', 'Test case updated successfully.');
     }
 
     /**
@@ -154,13 +149,13 @@ class TestCaseController extends Controller
     public function delete(Request $request, Project $project, Page $page, TestCase $testCase)
     {
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to delete this test case.');
+            return redirect()->route('projects')->with('error', 'Access denied: Unauthorized to delete this test case.');
         }
 
         $request->validate([
             'test_case_confirmation' => ['required', 'string', function ($attribute, $value, $fail) use ($testCase) {
                 if ($value !== $testCase->test_title) {
-                    $fail('The confirmation text does not match the test case title.');
+                    $fail('Confirmation text does not match the test case title.');
                 }
             }],
         ]);
@@ -168,37 +163,32 @@ class TestCaseController extends Controller
         $testCase->delete();
 
         return redirect()->route('test.index', ['project' => $project->id, 'page' => $page->id])
-                        ->with('success', 'Test case deleted successfully.');
+                        ->with('success', 'Test case removed successfully.');
     }
 
     public function updateStatus(Request $request, Project $project, Page $page, $id)
     {
-        // Authorization check
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to update the test case status.');
+            return redirect()->route('projects')->with('error', 'Access denied: Unauthorized to update test case status.');
         }
 
-        // Validate input
         $validated = $request->validate([
             'status' => 'required|in:0,1,2', // 0 for pending, 1 for pass, 2 for fail
             'comments' => 'nullable|string',
         ]);
 
-        // Find the test case
         $testCase = TestCase::find($id);
         if (!$testCase) {
             return redirect()->back()->with('error', 'Test case not found.');
         }
 
-        // Update the test case
         $testCase->update([
             'test_status' => $validated['status'],
             'comments' => $validated['comments'],
             'tested_by' => auth()->id(),
         ]);
 
-        return redirect()->back()->with('success', 'Test case status updated successfully!');
+        return redirect()->back()->with('success', 'Test case status updated successfully.');
     }
-
 
 }

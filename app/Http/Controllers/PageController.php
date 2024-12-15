@@ -23,7 +23,7 @@ class PageController extends Controller
     public function index(Project $project)
     {
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to view pages for this project.');
+            return redirect()->route('projects')->with('warning', 'You are not authorized to view pages for this project.');
         }
 
         $pages = $project->pages;
@@ -36,7 +36,7 @@ class PageController extends Controller
     public function create(Project $project)
     {
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to create a page for this project.');
+            return redirect()->route('projects')->with('warning', 'You are not authorized to create a page for this project.');
         }
 
         return view('dashboard.pages.create', compact('project'));
@@ -49,7 +49,7 @@ class PageController extends Controller
     {
         // Check if the user is authorized to access the project
         if (!$this->authorizeProjectAccess($project)) {
-            return redirect()->route('projects')->with('error', 'You are not authorized to store a page for this project.');
+            return redirect()->route('projects')->with('warning', 'You are not authorized to store a page for this project.');
         }
 
         $validatedData = $request->validate([
@@ -65,6 +65,7 @@ class PageController extends Controller
 
         return redirect()->route('page.index', $project)->with('success', 'Page created successfully!');
     }
+
     /**
      * Show the form for editing the specified page.
      */

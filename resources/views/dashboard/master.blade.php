@@ -41,6 +41,7 @@
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
         @include('dashboard.layouts.navbar')
         @yield('content')
+        @include('dashboard.layouts.toast-message')
     </main>
     @include('dashboard.layouts.setting')
     <!--   Core JS Files   -->

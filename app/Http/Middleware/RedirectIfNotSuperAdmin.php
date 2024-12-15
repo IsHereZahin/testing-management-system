@@ -18,7 +18,7 @@ class RedirectIfNotSuperAdmin
                 return $next($request);
             } else {
                 // Redirect non-super-admin users to '/dashboard'
-                return redirect('/dashboard');
+                return redirect('/dashboard')->with('error', 'You are not authorized to access this page.');
             }
         }
 
