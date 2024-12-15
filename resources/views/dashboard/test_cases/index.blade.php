@@ -44,25 +44,75 @@
                                             <p class="text-xs font-weight-bold mb-0">{{ $testCase->test_case_id }}</p>
                                         </td>
                                         <td>
-                                            <p class="text-xs font-weight-bold mb-0">{{ $testCase->test_title}}</p>
+                                            <p class="text-xs font-weight-bold mb-0">{{ $testCase->test_title }}</p>
                                         </td>
-                                        <td class="align-middle text-center">
-                                            <span class="badge badge-sm
-                                            @if($testCase->test_status == 'pass') bg-gradient-success
-                                            @elseif($testCase->test_status == 'fail') bg-gradient-danger
-                                            @else bg-gradient-warning
-                                            @endif">
-                                                {{ $testCase->test_status }}
+                                        <td class="align-middle text-center text-sm">
+                                            <span
+                                                class="badge badge-sm
+                                                    @if($testCase->test_status == 0)
+                                                        bg-gradient-warning  // Yellow for pending
+                                                    @elseif($testCase->test_status == 1)
+                                                        bg-gradient-success  // Green for pass
+                                                    @else
+                                                        bg-gradient-danger  // Red for fail
+                                                    @endif
+                                                    cursor-pointer"
+                                                data-bs-toggle="modal" data-bs-target="#statusChangeModal-{{ $testCase->id }}">
+                                                @if($testCase->test_status == 0)
+                                                    Pending
+                                                @elseif($testCase->test_status == 1)
+                                                    Pass
+                                                @else
+                                                    Fail
+                                                @endif
                                             </span>
                                         </td>
+
+                                        <!-- Status Change Modal -->
+                                        <div class="modal fade" id="statusChangeModal-{{ $testCase->id }}" tabindex="-1" aria-labelledby="statusChangeModalLabel-{{ $testCase->id }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="statusChangeModalLabel-{{ $testCase->id }}">Change Test Case Status</h5>
+                                                        <button type="button" class="btn-close text-muted" data-bs-dismiss="modal" aria-label="Close">X</button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="{{ route('test.update-status', ['project' => $project->id, 'page' => $page->id, 'id' => $testCase->id]) }}" method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="mb-3">
+                                                                <label for="status-{{ $testCase->id }}" class="form-label">Test Status</label>
+                                                                <select name="status" id="status-{{ $testCase->id }}" class="border p-2 form-select" required>
+                                                                    <option value="0" @if($testCase->test_status == 0) selected @endif>Pending</option>
+                                                                    <option value="1" @if($testCase->test_status == 1) selected @endif>Pass</option>
+                                                                    <option value="2" @if($testCase->test_status == 2) selected @endif>Fail</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="comments-{{ $testCase->id }}" class="form-label">Comments</label>
+                                                                <textarea name="comments" id="comments-{{ $testCase->id }}" class="ckeditor form-control" rows="3" placeholder="Add comments..." required>{{ $testCase->comments ?? '' }}</textarea>
+                                                            </div>
+
+                                                            <div class="d-flex justify-content-between">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="btn btn-primary">Save</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Status Change Modal -->
+
                                         <td class="align-middle text-center">
-                                            <div class=" d-flex gap-2">
+                                            <div class="d-flex gap-2">
                                                 <a href="{{ route('test.show', ['project' => $project->id, 'page' => $page->id, 'testCase' => $testCase->id]) }}" class="btn btn-info btn-sm p-2 text-white" data-toggle="tooltip" data-original-title="View Test Case">
                                                     <i class="material-symbols-rounded fs-4">info</i>
                                                 </a>
 
                                                 <a href="{{ route('test.edit', ['project' => $project->id, 'page' => $page->id, 'testCase' => $testCase->id]) }}" class="btn btn-warning d-flex align-items-center justify-content-center p-2" title="Edit Test Case">
-                                                    <i class="material-symbols-rounded fs-4">edit</i> <!-- Font size increased -->
+                                                    <i class="material-symbols-rounded fs-4">edit</i>
                                                 </a>
 
                                                 <button type="button" class="btn btn-danger d-flex align-items-center justify-content-center p-2"
@@ -75,7 +125,7 @@
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title" id="deleteTestCaseModalLabel-{{ $testCase->id }}">Delete Test Case</h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                <button type="button" class="btn-close text-muted" data-bs-dismiss="modal" aria-label="Close">X</button>
                                                             </div>
                                                             <div class="modal-body">
                                                                 <p>

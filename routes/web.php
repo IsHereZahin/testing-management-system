@@ -61,8 +61,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('project/{project}/{page}/test/{testCase}/edit', 'edit')->name('test.edit');
         Route::put('project/{project}/{page}/test/{testCase}/update', 'update')->name('test.update');
         Route::delete('/project/{project}/{page}/test/{testCase}/delete', 'delete')->name('test.delete');
-    });
+        Route::put('/projects/{project}/pages/{page}/test-case/{id}/update-status', 'updateStatus')->name('test.update-status');
 
+    });
 });
 
 Route::middleware(['auth', 'verified', 'role:super-admin'])->group(function () {

@@ -58,7 +58,7 @@ class TestCaseController extends Controller
             'test_case_id' => 'required|string|max:255',
             'test_title' => 'required|string|max:255',
             'description' => 'required',
-            'test_status' => 'nullable|in:pending,pass,fail',
+            'test_status' => 'nullable',
             'comments' => 'nullable|string',
         ]);
 
@@ -76,7 +76,7 @@ class TestCaseController extends Controller
             'test_case_id' => $validated['test_case_id'],
             'test_title' => $validated['test_title'],
             'description' => $validated['description'],
-            'test_status' => $validated['test_status'] ?? 'pending',
+            // 'test_status' => $validated['test_status'],
             'comments' => $validated['comments'] ?? null,
             'tested_by' => auth()->id(),
             'page_id' => $page->id,
@@ -170,4 +170,35 @@ class TestCaseController extends Controller
         return redirect()->route('test.index', ['project' => $project->id, 'page' => $page->id])
                         ->with('success', 'Test case deleted successfully.');
     }
+
+    public function updateStatus(Request $request, Project $project, Page $page, $id)
+    {
+        // Authorization check
+        if (!$this->authorizeProjectAccess($project)) {
+            return redirect()->route('projects')->with('error', 'You are not authorized to update the test case status.');
+        }
+
+        // Validate input
+        $validated = $request->validate([
+            'status' => 'required|in:0,1,2', // 0 for pending, 1 for pass, 2 for fail
+            'comments' => 'nullable|string',
+        ]);
+
+        // Find the test case
+        $testCase = TestCase::find($id);
+        if (!$testCase) {
+            return redirect()->back()->with('error', 'Test case not found.');
+        }
+
+        // Update the test case
+        $testCase->update([
+            'test_status' => $validated['status'],
+            'comments' => $validated['comments'],
+            'tested_by' => auth()->id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Test case status updated successfully!');
+    }
+
+
 }

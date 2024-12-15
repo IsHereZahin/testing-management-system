@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('test_case_id')->unique();
             $table->string('test_title');
             $table->longText('description');
-            $table->enum('test_status', ['pending', 'pass', 'fail'])->default('pending');
+            $table->integer('test_status')->default(0)->nullable(); // 0 for pending, 1 for pass, 2 for fail
             $table->longText('comments')->nullable();
             $table->foreignId('tested_by')->constrained('users');
             $table->timestamps();
