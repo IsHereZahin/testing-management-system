@@ -22,7 +22,7 @@ return new class extends Migration
             $table->longText('description');
             $table->integer('test_status')->default(0)->nullable(); // 0 for pending, 1 for pass, 2 for fail
             $table->longText('comments')->nullable();
-            $table->foreignId('tested_by')->constrained('users');
+            $table->foreignId('tested_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

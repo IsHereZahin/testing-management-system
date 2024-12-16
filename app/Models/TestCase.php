@@ -29,6 +29,10 @@ class TestCase extends Model
 
     public function tested_by()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(User::class);
+    }
+    public function tester()
+    {
+        return $this->belongsTo(User::class, 'tested_by');
     }
 }

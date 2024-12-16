@@ -63,6 +63,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/project/{project}/{page}/test/{testCase}/delete', 'delete')->name('test.delete');
         Route::put('/projects/{project}/pages/{page}/test-case/{id}/update-status', 'updateStatus')->name('test.update-status');
         Route::post('/project/{project}/reset-all-test-cases', 'resetAllTestCases')->name('test.resetAll');
+        Route::post('/projects/{project}/test-cases/export', [TestCaseController::class, 'export'])->name('test.export');
     });
 });
 

@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\TestCase;
 use App\Models\Project;
 use App\Models\Page;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Exports\TestCasesExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TestCaseController extends Controller
 {
@@ -232,5 +235,29 @@ class TestCaseController extends Controller
             $testCase->save();
         }
         return redirect()->back()->with('success', 'Test case statuses and/or comments have been reset.');
+    }
+
+    public function export(Request $request, Project $project)
+    {
+        // Check if the user has permission to export
+        if (!$this->authorizeProjectAccess($project)) {
+            return redirect()->route('projects')->with('error', 'Access denied: Unauthorized to export test cases.');
+        }
+
+        // Validate the request
+        $validated = $request->validate([
+            'format' => 'required|in:csv,xls',
+            'columns' => 'required|array',
+            'columns.*' => 'string|in:test_case_id,test_title,description,test_status,comments,tested_by',
+        ]);
+
+        // Create export instance
+        $export = new TestCasesExport($project, $validated['columns']);
+
+        // Format file name
+        $fileName = Str::slug($project->name) . ($validated['format'] == 'csv' ? '.csv' : '.xlsx');
+
+        // Export based on format
+        return Excel::download($export, $fileName);
     }
 }

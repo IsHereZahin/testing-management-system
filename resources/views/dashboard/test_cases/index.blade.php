@@ -18,10 +18,66 @@
         </a>
     </h5>
 
-
     @if(auth()->user()->role === 'super-admin' || $project->testers->contains(auth()->user()))
         <a href="{{ url('/project/' . $project->id . '/' . $page->id . '/test/create') }}" class="btn bg-gradient-dark text-center">Create Test</a>
     @endif
+
+    <!-- Export Button -->
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal">Export</button>
+
+    <!-- Export Modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportModalLabel">Export Test Cases</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/projects/{{ $project->id }}/test-cases/export" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="projectName" class="form-label">Project Name</label>
+                            <input type="text" class="form-control" id="projectName" name="project_name" placeholder="Enter project name" value="{{ $project->name }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Select Export Format</label>
+                            <div>
+                                <input type="radio" id="formatCsv" name="format" value="csv" checked>
+                                <label for="formatCsv">CSV</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="formatXls" name="format" value="xls">
+                                <label for="formatXls">XLS</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Select Columns</label>
+                            <div>
+                                <input type="checkbox" name="columns[]" value="test_case_id" checked> Test Case ID
+                            </div>
+                            <div>
+                                <input type="checkbox" name="columns[]" value="test_title" checked> Title
+                            </div>
+                            <div>
+                                <input type="checkbox" name="columns[]" value="description"> Description
+                            </div>
+                            <div>
+                                <input type="checkbox" name="columns[]" value="test_status" checked> Test Status
+                            </div>
+                            <div>
+                                <input type="checkbox" name="columns[]" value="comments"> Comments
+                            </div>
+                            <div>
+                                <input type="checkbox" name="columns[]" value="tested_by"> Tested By
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Export</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Loop through each section and create a table for each -->
     @foreach($testCases->groupBy('section') as $section => $testCasesInSection)
@@ -210,5 +266,27 @@
     </div>
     @endforeach
 </div>
+<script>
+document.getElementById('exportForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    const params = new URLSearchParams();
+
+    // Combine checkbox values for columns
+    const selectedColumns = formData.getAll('columns').join(',');
+    formData.delete('columns'); // Remove duplicate entries
+    params.append('columns', selectedColumns);
+
+    for (const pair of formData.entries()) {
+        if (pair[0] !== 'columns') {
+            params.append(pair[0], pair[1]);
+        }
+    }
+
+    const url = `/export?${params.toString()}`;
+    window.location.href = url; // Trigger download
+});
+</script>
 @endif
 @endsection
