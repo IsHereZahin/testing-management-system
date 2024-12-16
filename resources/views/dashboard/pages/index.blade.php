@@ -1,12 +1,94 @@
 @extends('dashboard.master')
 
 @section('content')
-<div class="container py-4">
-    <h2>Pages for Project: {{ $project->name }}</h2>
-
+@if($pages->isEmpty())
+<div class="d-flex flex-column justify-content-center align-items-center vh-100 text-center">
     @if(auth()->user()->role === 'super-admin' || $project->testers->contains(auth()->user()))
-        <a href="{{ url('/project/' . $project->id . '/page/create') }}" class="btn btn-primary">Create Page</a>
+        <a href="{{ url('/project/' . $project->id . '/page/create') }}" class="btn bg-gradient-dark text-center">Create Page</a>
     @endif
+    <h5>No pages found for this project.</h5>
+    <p>You can create a new page by clicking the "Create Page" button above.</p>
+</div>
+@else
+<div class="container py-4">
+    <div class="d-flex justify-content-between mb-4">
+        <!-- Left Side: Project Name and Create Page Button -->
+        <div>
+            <h5>
+                Pages for Project:
+                <a href="{{ url('/projects') }}" style="color: #007bff; text-decoration: none;">
+                    {{ $project->name }}
+                </a>
+            </h5>
+
+            @if(auth()->user()->role === 'super-admin' || $project->testers->contains(auth()->user()))
+                <a href="{{ url('/project/' . $project->id . '/page/create') }}" class="btn bg-gradient-dark text-center">Create Page</a>
+            @endif
+        </div>
+
+        <!-- Right Side: Reset Button -->
+        <div>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#resetModal">
+                Reset All
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resetModalLabel">Reset All Tests Data</h5>
+                    <button type="button" class="btn-close text-muted" data-bs-dismiss="modal" aria-label="Close">X</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Warning Message -->
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Warning:</strong> Resetting test case status and comments cannot be undone. Please proceed with caution.
+                    </div>
+
+                    <form action="{{ route('test.resetAll', $project->id) }}" method="POST">
+                        @csrf
+
+                        <!-- Checkbox for Status Reset -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1" id="resetStatus" name="reset_status">
+                                <label class="form-check-label" for="resetStatus">
+                                    Reset Status
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Checkbox for Comment Reset -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1" id="resetComments" name="reset_comments">
+                                <label class="form-check-label" for="resetComments">
+                                    Reset Comments
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Confirmation -->
+                        <div class="mb-3">
+                            <label for="confirmation" class="form-label">
+                                To confirm, type "{{ $project->name }}" below:
+                            </label>
+                            <input type="text" name="confirmation" id="projectNameConfirmation-{{ $project->id }}"
+                                   class="form-control border p-2" placeholder="{{ $project->name }}" required>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-danger">Reset All Test Cases</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Table displaying all pages -->
     <div class="container-fluid py-2">
@@ -25,11 +107,10 @@
                                     <tr>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Creator</th>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Page</th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Update</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">View</th>
                                         @can('edit-page')
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Action</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                                         @endcan
                                     </tr>
                                 </thead>
@@ -38,23 +119,23 @@
                                     <tr>
                                         <td>
                                             <div class="d-flex px-2 py-1">
-                                                <div>
+                                                {{-- <div>
                                                     <img src="{{ $page->creator->avatar_url ?? asset('./assets/img/team-4.jpg') }}" class="avatar avatar-sm me-3 border-radius-lg" alt="user1">
-                                                </div>
-                                                <div class="d-flex flex-column justify-content-center">
-                                                    <h6 class="mb-0 text-sm">{{ $page->creator->name }}</h6>
-                                                    <p class="text-xs text-secondary mb-0">{{ $page->creator->email ?? 'N/A' }}</p>
+                                                </div> --}}
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <h6 class="text-xs font-weight-bold mb-1">{{ $page->creator->name }}</h6>
+                                                    <span class="text-xs font-weight-bold mb-1">{{ $page->updated_at->format('d/m/Y') }}</span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
                                             <p class="text-xs font-weight-bold mb-0">{{ $page->name }}</p>
                                         </td>
-                                        <td class="align-middle text-center">
-                                            <span class="text-secondary text-xs font-weight-bold">{{ $page->updated_at->format('d/m/Y') }}</span>
-                                        </td>
                                         <td class="align-middle text-center text-sm" data-bs-toggle="tooltip"
-                                            title="Total Tests: {{ $page->total_tests }}, Pending: {{ $page->pending_count }}, Tested: {{ $page->pass_count + $page->fail_count }} ({{ round(($page->pass_count + $page->fail_count) / $page->total_tests * 100, 2) }}%), Pass: {{ $page->pass_count }}, Fail: {{ $page->fail_count }}">                                        <div class="d-flex flex-column align-items-center">
+                                            title="Total Tests: {{ $page->total_tests }}, Pending: {{ $page->pending_count }},
+                                            Tested: {{ $page->pass_count + $page->fail_count }} ({{ $page->total_tests > 0 ? round(($page->pass_count + $page->fail_count) / $page->total_tests * 100, 2) : 0 }}%),
+                                            Pass: {{ $page->pass_count }}, Fail: {{ $page->fail_count }}">
+                                            <div class="d-flex flex-column align-items-center">
                                                 <!-- Pending Tests -->
                                                 {{-- <span class="text-xs font-weight-bold mb-1">
                                                     Pending: {{ $page->pending_count }}
@@ -66,7 +147,7 @@
                                                 <!-- Tested and Breakdown -->
                                                 <span class="text-xs font-weight-bold mb-1">
                                                     Tested: {{ $page->pass_count + $page->fail_count }} / {{ $page->total_tests }}
-                                                    ({{ round(($page->pass_count + $page->fail_count) / $page->total_tests * 100, 2) }}%)
+                                                    ({{ $page->total_tests > 0 ? round(($page->pass_count + $page->fail_count) / $page->total_tests * 100, 2) : 0 }}%)
                                                 </span>
                                                 <!-- Progress Bar -->
                                                 <div class="progress mt-2" style="width: 100%; height: 8px;">
@@ -85,6 +166,7 @@
                                             </div>
                                         </td>
 
+
                                         <td class="align-middle text-center">
                                             <a href="{{ route('test.index', ['project' => $project->id, 'page' => $page->id]) }}"
                                                 data-bs-toggle="tooltip"
@@ -98,17 +180,11 @@
                                             <div class="d-flex justify-content-center gap-2">
 
                                                 @can('edit-page')
-                                                <a href="{{ url('/project/' . $project->id . '/page/' . $page->id . '/edit') }}"
-                                                    class="btn btn-warning d-flex align-items-center justify-content-center p-2"
-                                                    title="Edit Page">
-                                                    <i class="material-symbols-rounded fs-4">edit</i>
-                                                </a>
+                                                <a href="{{ url('/project/' . $project->id . '/page/' . $page->id . '/edit') }}" class="text-secondary font-weight-bold text-xs" title="Edit Page">Edit</a>
                                                 @endcan
 
                                                 @can('delete-page')
-                                                <button type="button" class="btn btn-danger d-flex align-items-center justify-content-center p-2" data-bs-toggle="modal" title="Delete Page" data-bs-target="#deletePageModal-{{ $page->id }}">
-                                                    <i class="material-symbols-rounded fs-4">delete</i>
-                                                </button>
+                                                <a type="button" class="text-secondary font-weight-bold text-xs" data-bs-toggle="modal" title="Delete Page" data-bs-target="#deletePageModal-{{ $page->id }}">Delete</a>
 
                                                 <!-- Delete Modal -->
                                                 <div class="modal fade" id="deletePageModal-{{ $page->id }}" tabindex="-1" aria-labelledby="deletePageModalLabel-{{ $page->id }}" aria-hidden="true">
@@ -116,7 +192,7 @@
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title" id="deletePageModalLabel-{{ $page->id }}">Delete Page</h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                <button type="button" class="btn-close text-muted" data-bs-dismiss="modal" aria-label="Close">X</button>
                                                             </div>
                                                             <div class="modal-body text-center">
                                                                 <p>
@@ -159,4 +235,5 @@
         </div>
     </div>
 </div>
+@endif
 @endsection

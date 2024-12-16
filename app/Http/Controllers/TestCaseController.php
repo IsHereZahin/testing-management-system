@@ -191,4 +191,46 @@ class TestCaseController extends Controller
         return redirect()->back()->with('success', 'Test case status updated successfully.');
     }
 
+    public function resetAllTestCases(Request $request, Project $project)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('warning', 'You must be logged in to perform this action.');
+        }
+
+        if (!$this->authorizeProjectAccess($project)) {
+            return redirect()->route('projects')->with('warning', 'Access denied: Unauthorized to update test case status.');
+        }
+
+        $request->validate([
+            'confirmation' => 'required|in:'.$project->name,
+        ]);
+
+        // Check at least one checkbox is selected (reset status or reset comments)
+        if (!$request->has('reset_status') && !$request->has('reset_comments')) {
+            return redirect()->back()->with('danger', 'Please select at least one option (Status or Comments) to reset.');
+        }
+
+        $currentUserId = auth()->id();
+
+        $testCases = TestCase::whereHas('page', function ($query) use ($project) {
+            $query->where('project_id', $project->id);
+        })->get();
+
+        // Loop each test case
+        foreach ($testCases as $testCase) {
+            if ($request->has('reset_status')) {
+                $testCase->test_status = 0; // Reset status to 'Pending'
+            }
+
+            if ($request->has('reset_comments')) {
+                $testCase->comments = null;
+            }
+
+            // Update 'tested_by' user's ID
+            $testCase->tested_by = $currentUserId;
+
+            $testCase->save();
+        }
+        return redirect()->back()->with('success', 'Test case statuses and/or comments have been reset.');
+    }
 }

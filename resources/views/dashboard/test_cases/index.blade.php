@@ -1,11 +1,26 @@
 @extends('dashboard.master')
 
 @section('content')
+@if($testCases->isEmpty())
+<div class="d-flex flex-column justify-content-center align-items-center vh-100 text-center">
+    @if(auth()->user()->role === 'super-admin' || $project->testers->contains(auth()->user()))
+        <a href="{{ url('/project/' . $project->id . '/' . $page->id . '/test/create') }}" class="btn bg-gradient-dark text-center mb-3">Create Test</a>
+    @endif
+    <h5>No test found for this page.</h5>
+    <p>You can create one by clicking the "Create Test" button above.</p>
+</div>
+@else
 <div class="container py-4">
-    <h2>Test Cases for Page: {{ $page->name }}</h2>
+    <h5>
+        Test Cases for Page:
+        <a href="{{ url('/project/' . $project->id . '/pages') }}" style="color: #007bff; text-decoration: none;">
+            {{ $page->name }}
+        </a>
+    </h5>
+
 
     @if(auth()->user()->role === 'super-admin' || $project->testers->contains(auth()->user()))
-        <a href="{{ url('/project/' . $project->id . '/' . $page->id . '/test/create') }}" class="btn btn-primary">Create Test Case</a>
+        <a href="{{ url('/project/' . $project->id . '/' . $page->id . '/test/create') }}" class="btn bg-gradient-dark text-center">Create Test</a>
     @endif
 
     <!-- Loop through each section and create a table for each -->
@@ -96,7 +111,7 @@
 
                                                             <div class="d-flex justify-content-between">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                                <button type="submit" class="btn btn-primary">Save</button>
+                                                                <button type="submit" class="btn bg-gradient-dark text-center">Save</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -107,9 +122,39 @@
 
                                         <td class="align-middle text-center">
                                             <div class="d-flex gap-2">
-                                                <a href="{{ route('test.show', ['project' => $project->id, 'page' => $page->id, 'testCase' => $testCase->id]) }}" class="btn btn-info btn-sm p-2 text-white" data-toggle="tooltip" data-original-title="View Test Case">
+                                                <!-- Button to Trigger Modal -->
+                                                @php
+                                                    $hasComment = !empty($testCase->comments);
+                                                @endphp
+                                                <div class="btn @if($hasComment) btn-info @else btn-secondary @endif btn-sm p-2 text-white"
+                                                    data-bs-toggle="modal" data-bs-target="#testCaseModal-{{ $testCase->id }}"
+                                                    data-bs-toggle="tooltip" data-bs-original-title="View Test Case">
                                                     <i class="material-symbols-rounded fs-4">info</i>
-                                                </a>
+                                                </div>
+
+                                                <!-- Modal Structure -->
+                                                <div class="modal fade" id="testCaseModal-{{ $testCase->id }}" tabindex="-1" aria-labelledby="testCaseModalLabel-{{ $testCase->id }}" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-end" style="max-width: 70%;">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="testCaseModalLabel-{{ $testCase->id }}">Test Details</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body" style="text-align: left;">
+                                                                <h6>Test Requirement</h6>
+                                                                <div>{!! old('description', $testCase->description) !!}</div>
+
+                                                                @if($testCase->comments)
+                                                                    <h6>Test Comment</h6>
+                                                                    <div>{!! old('comments', $testCase->comments) !!}</div>
+                                                                @endif
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                                 <a href="{{ route('test.edit', ['project' => $project->id, 'page' => $page->id, 'testCase' => $testCase->id]) }}" class="btn btn-warning d-flex align-items-center justify-content-center p-2" title="Edit Test Case">
                                                     <i class="material-symbols-rounded fs-4">edit</i>
@@ -165,4 +210,5 @@
     </div>
     @endforeach
 </div>
+@endif
 @endsection
