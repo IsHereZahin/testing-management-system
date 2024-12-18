@@ -8,6 +8,9 @@
     @endif
     <h5>No test found for this page.</h5>
     <p>You can create one by clicking the "Create Test" button above.</p>
+    <a href="{{ url('/project/' . $project->id . '/pages') }}" style="text-decoration: none;">
+        Back
+    </a>
 </div>
 @else
 <div class="container py-4">
@@ -190,19 +193,24 @@
 
                                                 <!-- Modal Structure -->
                                                 <div class="modal fade" id="testCaseModal-{{ $testCase->id }}" tabindex="-1" aria-labelledby="testCaseModalLabel-{{ $testCase->id }}" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-end" style="max-width: 70%;">
+                                                    <div class="modal-dialog modal-dialog-end modal-dialog-custom">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title" id="testCaseModalLabel-{{ $testCase->id }}">Test Details</h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body" style="text-align: left;">
-                                                                <h6>Test Requirement</h6>
-                                                                <div>{!! old('description', $testCase->description) !!}</div>
+                                                                <h5 style="white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;">{{ $testCase->test_title }}</h5>
+                                                                <h6>Description:</h6>
+                                                                <div style="white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; margin: -50px 0px;">
+                                                                    {!! old('description', $testCase->description) !!}
+                                                                </div>
 
                                                                 @if($testCase->comments)
-                                                                    <h6>Test Comment</h6>
-                                                                    <div>{!! old('comments', $testCase->comments) !!}</div>
+                                                                    <h6>Comment:</h6>
+                                                                    <div style="white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; margin: -50px 0px;">
+                                                                        {!! old('comments', $testCase->comments) !!}
+                                                                    </div>
                                                                 @endif
                                                             </div>
                                                             <div class="modal-footer">
@@ -225,12 +233,12 @@
                                                     <div class="modal-dialog modal-dialog-centered">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title" id="deleteTestCaseModalLabel-{{ $testCase->id }}">Delete Test Case</h5>
+                                                                <h5 class="modal-title" id="deleteTestCaseModalLabel-{{ $testCase->id }}">Delete Test</h5>
                                                                 <button type="button" class="btn-close text-muted" data-bs-dismiss="modal" aria-label="Close">X</button>
                                                             </div>
                                                             <div class="modal-body">
                                                                 <p>
-                                                                    Are you sure you want to delete the test case <strong>"{{ $testCase->test_title }}"</strong>?
+                                                                    Are you sure you want to delete the test?
                                                                 </p>
                                                                 <p class="text-danger">This action cannot be undone.</p>
                                                                 <form action="{{ route('test.delete', ['project' => $project->id, 'page' => $page->id, 'testCase' => $testCase->id]) }}" method="POST">
@@ -239,10 +247,10 @@
 
                                                                     <div class="mb-3">
                                                                         <label for="testCaseConfirmation-{{ $testCase->id }}" class="form-label">
-                                                                            To confirm, type "<strong>{{ $testCase->test_title }}</strong>" below:
+                                                                            To confirm, type "delete task" below:
                                                                         </label>
                                                                         <input type="text" name="test_case_confirmation" id="testCaseConfirmation-{{ $testCase->id }}"
-                                                                            class="form-control border p-2" placeholder="{{ $testCase->test_title }}" required>
+                                                                            class="form-control border p-2" placeholder="delete task" required>
                                                                     </div>
 
                                                                     <button type="submit" class="btn btn-danger w-100">Confirm Deletion</button>
@@ -288,5 +296,16 @@ document.getElementById('exportForm').addEventListener('submit', function (event
     window.location.href = url; // Trigger download
 });
 </script>
+<style>
+.modal-dialog-custom {
+    max-width: 70%;
+}
+
+@media (max-width: 768px) {
+    .modal-dialog-custom {
+        max-width: 95%;
+    }
+}
+</style>
 @endif
 @endsection

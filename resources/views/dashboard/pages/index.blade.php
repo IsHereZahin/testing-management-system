@@ -179,6 +179,8 @@
                                         <td class="align-middle text-center">
                                             <div class="d-flex justify-content-center gap-2">
 
+                                                {{-- <a href="{{ url('/project/' . $project->id . '/page/' . $page->id) }}" class="text-secondary font-weight-bold text-xs" title="Show Info Page">Info</a> --}}
+
                                                 @can('edit-page')
                                                 <a href="{{ url('/project/' . $project->id . '/page/' . $page->id . '/edit') }}" class="text-secondary font-weight-bold text-xs" title="Edit Page">Edit</a>
                                                 @endcan
@@ -196,7 +198,7 @@
                                                             </div>
                                                             <div class="modal-body text-center">
                                                                 <p>
-                                                                    This page contains <strong>{{ $page->testCases->count() }}</strong> test case(s). Deleting it will remove all associated data.
+                                                                    This page contains <strong>{{ $page->testCases->count() }}</strong> test case(s).<br>Deleting it will remove all associated data.
                                                                 </p>
                                                                 <p class="text-danger">
                                                                     This action cannot be undone.

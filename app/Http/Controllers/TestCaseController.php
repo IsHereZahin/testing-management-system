@@ -57,7 +57,6 @@ class TestCaseController extends Controller
         }
 
         $validated = $request->validate([
-            'test_case_id' => 'required|string|max:255',
             'test_title' => 'required|string|max:255',
             'description' => 'required',
             'test_status' => 'nullable',
@@ -69,9 +68,14 @@ class TestCaseController extends Controller
             return redirect()->back()->withErrors(['section' => 'Please select or create a section.']);
         }
 
+        // Generate the test_case_id
+        $projectInitials = strtoupper(substr($project->name, 0, 3));
+        $pageId = $page->id;
+        $testCaseId = $projectInitials . $pageId . (TestCase::max('id') + 1);
+
         TestCase::create([
             'section' => $section,
-            'test_case_id' => $validated['test_case_id'],
+            'test_case_id' => $testCaseId,
             'test_title' => $validated['test_title'],
             'description' => $validated['description'],
             'comments' => $validated['comments'] ?? null,
@@ -120,7 +124,7 @@ class TestCaseController extends Controller
         $validated = $request->validate([
             'section' => 'nullable|string|max:255',
             'new_section' => 'nullable|string|max:255',
-            'test_case_id' => 'required|string|max:255',
+            // 'test_case_id' => 'required|string|max:255',
             'test_title' => 'required',
             'description' => 'required',
             'test_status' => 'nullable|in:pending,pass,fail',
@@ -134,7 +138,6 @@ class TestCaseController extends Controller
 
         $testCase->update([
             'section' => $section,
-            'test_case_id' => $validated['test_case_id'],
             'test_title' => $validated['test_title'],
             'description' => $validated['description'],
             'test_status' => $validated['test_status'] ?? $testCase->test_status,
@@ -156,9 +159,9 @@ class TestCaseController extends Controller
         }
 
         $request->validate([
-            'test_case_confirmation' => ['required', 'string', function ($attribute, $value, $fail) use ($testCase) {
-                if ($value !== $testCase->test_title) {
-                    $fail('Confirmation text does not match the test case title.');
+            'test_case_confirmation' => ['required', 'string', function ($attribute, $value, $fail) {
+                if (strtolower($value) !== 'delete task') {
+                    $fail('Confirmation text must be "delete task".');
                 }
             }],
         ]);

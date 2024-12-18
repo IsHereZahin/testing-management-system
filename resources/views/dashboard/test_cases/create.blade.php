@@ -55,17 +55,29 @@
                                 }
                             });
 
-                            // Ensure the new section field is enabled if no test cases exist
-                            @if($project->testCases->count() === 0)
-                                document.getElementById('new_section').disabled = false;
-                            @endif
+                            // Ensure the new section field is enabled if no test cases exist or if there are no sections
+                            document.addEventListener("DOMContentLoaded", function() {
+                                var newSectionInput = document.getElementById('new_section');
+                                var sectionDropdown = document.getElementById('section');
+
+                                // Enable new section field if there are no test cases
+                                if (@json($project->testCases->count()) === 0) {
+                                    newSectionInput.disabled = false;
+                                }
+
+                                // Enable new section field if no section is selected and there are no test cases
+                                if (sectionDropdown.value === "") {
+                                    newSectionInput.disabled = false;
+                                }
+                            });
                         </script>
 
+                        {{--
                         <!-- Test Case ID -->
                         <div class="form-group mb-3">
                             <label for="test_case_id" class="form-label">Test Case ID</label>
                             <input type="text" id="test_case_id" name="test_case_id" class="form-control border p-3" placeholder="Enter test case ID" value="{{ old('test_case_id') }}" required>
-                        </div>
+                        </div> --}}
 
                         <!-- test_title -->
                         <div class="form-group mb-3">

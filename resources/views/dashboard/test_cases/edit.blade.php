@@ -63,14 +63,14 @@
                             document.getElementById('section').dispatchEvent(new Event('change'));
                         </script>
 
-                        <div class="form-group mb-3">
+                        {{-- <div class="form-group mb-3">
                             <label for="test_case_id" class="form-label">Test Case ID</label>
                             <input type="text" id="test_case_id" name="test_case_id" class="form-control border p-3" placeholder="Enter test case ID" value="{{ old('test_case_id', $testCase->test_case_id) }}" required>
-                        </div>
+                        </div> --}}
 
                         <div class="form-group mb-3">
                             <label for="test_title" class="form-label">Test Title</label>
-                            <input type="text" id="test_title" name="test_title" class="form-control border p-3" placeholder="Enter test case ID" value="{{ old('test_title', $testCase->test_case_id) }}" required>
+                            <input type="text" id="test_title" name="test_title" class="form-control border p-3" placeholder="Enter test case ID" value="{{ old('test_title', $testCase->test_title) }}" required>
                         </div>
 
                         <div class="form-group mb-3">

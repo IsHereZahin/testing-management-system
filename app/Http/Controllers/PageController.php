@@ -75,6 +75,15 @@ class PageController extends Controller
         return redirect()->route('page.index', $project)->with('success', 'Page created successfully!');
     }
 
+    public function show(Project $project, Page $page)
+    {
+        if (!$this->authorizeProjectAccess($project)) {
+            return redirect()->route('projects')->with('warning', 'You are not authorized to view this page for this project.');
+        }
+
+        return view('dashboard.pages.show', compact('project', 'page'));
+    }
+
     /**
      * Show the form for editing the specified page.
      */
